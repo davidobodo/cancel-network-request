@@ -1,6 +1,7 @@
 // Variables
 const input = document.querySelector("input");
 const listWrapper = document.querySelector("ul");
+let cancelRequest = null;
 
 /**
  * Returns the list of movies.
@@ -9,8 +10,14 @@ const listWrapper = document.querySelector("ul");
  * @return {number} array of movie data.
  */
 const handleGetMovies = async (text) => {
+    if (currentRequest) {
+        currentRequest.cancel();
+    }
+    currentRequest = axios.CancelToken.source();
     try {
-        const res = await axios.get(`https://api.punkapi.com/v2/beers?beer_name=${text}`);
+        const res = await axios.get(`https://api.punkapi.com/v2/beers?beer_name=${text}`, {
+            cancelToken: currentRequest.token
+        });
         return res.data;
     } catch (err) {
         console.log(err);
